@@ -1,24 +1,21 @@
 import React from "react";
-import apiData from "./api";
-import PersonInfo from "./PersonInfo";
+import { MainLayout } from "./layout/main-layout/main-layout";
+import { PersonsList } from "./components/feature-person-list/persons-list";
+import { PersonInfoProvider } from "./data-access/person-info-ctx";
+import { ErrorAlert } from "./components/feature-error-alert/error-alert";
+import { SelectedPersonsList } from "./components/feature-person-list/selected-persons-list";
+import ErrorBoundary from "antd/lib/alert/ErrorBoundary";
 
-function App() {
-  const [data, setData] = React.useState([]);
-  const [selected, setSelected] = React.useState([]);
-
-  //  TODO fetch contacts using apiData function, handle loading and error states
-
-  return (
-    <div className="App">
-      <div className="selected">Selected contacts: {selected.length}</div>
-      <div className="list">
-        {data.map((personInfo) => (
-          // @ts-ignore
-          <PersonInfo key={personInfo.id} data={personInfo} />
-        ))}
-      </div>
-    </div>
-  );
-}
+const App: React.FC = () => (
+  <ErrorBoundary message="ERROR" description="somthing, went wrong">
+    <PersonInfoProvider>
+      <ErrorAlert />
+      <MainLayout>
+        <SelectedPersonsList />
+        <PersonsList />
+      </MainLayout>
+    </PersonInfoProvider>
+  </ErrorBoundary>
+);
 
 export default App;

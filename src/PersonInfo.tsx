@@ -1,35 +1,46 @@
-import React from "react";
+import { useCallback } from "react";
+import styled from "styled-components";
+import {
+  useAddSelectedPerson,
+  useRemoveSelectedPerson,
+} from "./components/feature-person-list/utils/use-persons-ctx";
+import { sharedButtonStyles } from "./components/shared/common-styles";
+import { PersonType } from "./data-access/types";
 
-type Props = {
-  data: {
-    firstNameLastName: string;
-    jobTitle: string;
-    emailAddress: string;
-  };
-};
-
-function PersonInfo(props: Props) {
-  const { data } = props;
-  return (
-    <div
-      style={{
-        display: "flex",
-        height: "100px",
-        justifyContent: "center",
-        flexDirection: "column",
-        padding: "32px",
-        boxShadow: "0px 1px 2px 0px rgba(0, 0, 0, 0.15)",
-        margin: "10px 0",
-        background: "#fff",
-        cursor: "pointer",
-      }}
-      className="person-info"
-    >
-      <div className="firstNameLastName">{data.firstNameLastName}</div>
-      <div className="jobTitle">{data.jobTitle}</div>
-      <div className="emailAddress">{data.emailAddress}</div>
-    </div>
-  );
+interface Props {
+  person: PersonType;
+  isSelected: boolean;
+  className?: string;
 }
 
-export default PersonInfo;
+const PersonInfo: React.FC<Props> = ({ person, isSelected, className }) => {
+  const handleAddSelectedPerson = useAddSelectedPerson();
+  const handleRemoveSelectedPerson = useRemoveSelectedPerson();
+  const handleClick = useCallback(() => {
+    isSelected
+      ? handleRemoveSelectedPerson?.(person)
+      : handleAddSelectedPerson?.(person);
+  }, [handleAddSelectedPerson, handleRemoveSelectedPerson, isSelected, person]);
+
+  return (
+    <button
+      aria-label="person details"
+      className={`person-info ${className}`}
+      id={person.id}
+      name="SelectedPersons"
+      value={person.id}
+      onClick={handleClick}
+    >
+      <div className="firstNameLastName">{person?.firstNameLastName}</div>
+      <div className="jobTitle">{person?.jobTitle}</div>
+      <div className="emailAddress">{person?.emailAddress}</div>
+    </button>
+  );
+};
+
+const PersonInfoWrraped = styled(PersonInfo)`
+  ${sharedButtonStyles}
+  outline: ${(props) => (props.isSelected ? "2px solid green" : null)};
+`;
+
+export { PersonInfoWrraped as PersonInfo };
